@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.log
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# VSCode 설정
+.vscode/
+*.code-workspace
+
+# Spyder 설정
+.spyderproject
+.spyproject
+
+# 시스템 관련
+AppData/
+*.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 환경 설정 파일
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 기타
+*.zip
+*.bak
+*.swp
+
+# 프로젝트 산출물 (예: 영상, 결과 이미지 등)
+output/
+*.avi
+*.mp4
+*.webm
+*.png
+*.jpg

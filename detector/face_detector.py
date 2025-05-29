@@ -10,9 +10,9 @@ class FaceLandmarkDetector:
         self.drawing_spec = mp.solutions.drawing_utils.DrawingSpec(thickness=1, circle_radius=1)
 
         # 왼쪽/오른쪽 눈, 입 좌표 인덱스 (Mediapipe 기준)
-        self.LEFT_EYE_IDX = [33, 160, 158, 133, 153, 144]
-        self.RIGHT_EYE_IDX = [362, 385, 387, 263, 373, 380]
-        self.MOUTH_IDX = [61, 291, 81, 311, 78, 308]
+        self.LEFT_EYE_IDX = [160, 144, 158, 153, 33, 133]
+        self.RIGHT_EYE_IDX = [385, 380, 387, 373, 362, 263]
+        self.MOUTH_IDX = [13, 14, 80, 402, 271, 88, 61, 291]
 
     def get_landmarks(self, frame):
         # BGR → RGB 변환

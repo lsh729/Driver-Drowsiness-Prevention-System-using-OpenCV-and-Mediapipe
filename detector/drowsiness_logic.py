@@ -40,17 +40,32 @@ class DrowsinessEvaluator:
 
         if ear < self.ear_threshold:
             self.frame_count += 1
-            if self.frame_count >= 15:  # 눈을 15프레임 이상 감고 있으면 졸음
-                self.drowsy_score += 1
+            if self.frame_count % 30 == 0:  # 눈 감은지 1초마다 2점
+                self.drowsy_score += 2
                 state = "Drowsy"
         else:
             self.frame_count = 0
 
+       # 하품 감지: 1초 이상 유지 시 1번만 5점 추가
         if mar > self.mar_threshold:
-            self.drowsy_score += 1
-            state = "Yawning"
+            self.yawn_frame_count += 1
+            if self.yawn_frame_count >= 30 and not self.has_yawned:
+                self.drowsy_score += 5
+                self.has_yawned = True
+                state = "Yawning"
+        else:
+            self.yawn_frame_count = 0
+            self.has_yawned = False
 
-        if self.drowsy_score >= 5:
+        # 졸음 점수 기준 상태
+        if self.drowsy_score >= 30:
             state = "Danger"
+        elif self.drowsy_score >= 20:
+            state = "Warning"
+
+        # 점수 감소: 눈 뜨고 입 닫았을 때만 서서히 감소
+        if ear >= self.ear_threshold and mar <= self.mar_threshold:
+            if self.drowsy_score > 0:
+                self.drowsy_score -= 0.05
 
         return state

@@ -51,9 +51,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    print("❌ 카메라 열기 실패")
-else:
-    print("✅ 카메라 열림 성공")

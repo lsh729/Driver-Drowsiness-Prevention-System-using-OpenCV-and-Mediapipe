@@ -1,4 +1,6 @@
 import numpy as np
+import pygame
+import random
 
 def euclidean(p1, p2):
     return np.linalg.norm(np.array(p1) - np.array(p2))
@@ -9,10 +11,20 @@ class DrowsinessEvaluator:
         self.mar_threshold = 0.65
         self.frame_count = 0
         self.drowsy_score = 0
-        self.yawn_frame_count = 0       # 추가
-        self.has_yawned = False         # 추가
+        self.yawn_frame_count = 0
+        self.has_yawned = False         
         self.eye_close_counter = 0
         self.eye_open_frame = 0
+        
+        pygame.mixer.init()
+        self.current_audio = "none"
+        self.wake_up_songs = [
+            "songs/wake1.mp3",
+            "songs/wake2.mp3",
+            "songs/wake3.mp3",
+            "songs/wake4.mp3",
+            "songs/wake5.mp3"
+            ]
 
     def compute_EAR(self, eye):
         A = euclidean(eye[0], eye[1])
@@ -43,22 +55,24 @@ class DrowsinessEvaluator:
             self.eye_close_counter += 1
             self.eye_open_frame = 0
 
-            if self.eye_close_counter >= 30 and self.eye_close_counter % 30 == 0:
+            if self.eye_close_counter >= 120:
+                self.drowsy_score = 30        
+
+            if self.eye_close_counter >= 30 and self.eye_close_counter % 15 == 0:
                 self.drowsy_score += 2
 
         else:
-            if 0 < self.eye_close_counter <= 3:
-                print("Blink detected")  # 짧은 깜빡임
+            if 1 < self.eye_close_counter <= 3:
+                print("Blink detected")
+
 
             self.eye_close_counter = 0
             self.eye_open_frame += 1
 
-            if self.eye_open_frame >= 30 and self.eye_open_frame % 30 == 0:
+            if self.eye_open_frame >= 15 and self.eye_open_frame % 15 == 0:
                 self.drowsy_score = max(0, self.drowsy_score - 1)
         
-            if self.eye_close_counter >= 90:
-                self.drowsy_score = 30        
-        
+            
         if mar > self.mar_threshold:
             self.yawn_frame_count += 1
             if self.yawn_frame_count >= 15 and not self.has_yawned:
@@ -71,7 +85,25 @@ class DrowsinessEvaluator:
 
         if self.drowsy_score >= 30:
             state = "Danger"
-        elif self.drowsy_score >= 20:
+            if self.current_audio != "alarm":
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load("alarm.mp3")
+                pygame.mixer.music.play(-1)  
+                self.current_audio = "alarm"
+
+        elif 20 <= self.drowsy_score < 30:
             state = "Warning"
+            if self.current_audio != "music":
+                self.current_audio = "music"
+            if not pygame.mixer.music.get_busy():
+                next_song = random.choice(self.wake_up_songs)
+                pygame.mixer.music.load(next_song)
+                pygame.mixer.music.play()
+
+        else:
+            state = "Normal"
+            if self.current_audio != "none":
+                pygame.mixer.music.stop()
+                self.current_audio = "none"
 
         return state

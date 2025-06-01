@@ -8,11 +8,14 @@ from detector.drowsiness_logic import DrowsinessEvaluator
 cap = cv2.VideoCapture(0)
 face = FaceLandmarkDetector()
 evaluator = DrowsinessEvaluator()
+frame_count = 0
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    
+    frame_count += 1
 
     # 얼굴 랜드마크 추출
     landmarks = face.get_landmarks(frame)
@@ -28,6 +31,10 @@ while True:
             color = (0, 255, 255)
         else:
             color = (0, 0, 255)
+            
+        if state == "Danger" and (frame_count // 10) % 2 == 0:
+            h, w, _ = frame.shape
+            cv2.rectangle(frame, (0, 0), (w, h), (0, 0, 255), 10)
             
         # 점수와 상태 출력    
         cv2.putText(frame, f"Score: {score}", (30, 70),

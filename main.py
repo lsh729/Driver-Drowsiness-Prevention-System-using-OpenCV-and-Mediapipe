@@ -21,7 +21,7 @@ while True:
     landmarks = face.get_landmarks(frame)
 
     if landmarks:
-        state = evaluator.evaluate(landmarks)
+        state = evaluator.evaluate(landmarks, frame)
         
         # 점수 따라 색상 변경
         score = evaluator.drowsy_score
@@ -46,6 +46,10 @@ while True:
         # 눈/입 좌표 시각화
         for pt in landmarks['left_eye'] + landmarks['right_eye'] + landmarks['mouth']:
             cv2.circle(frame, pt, 2, (0, 255, 0), -1)
+            
+        # 얼굴 좌표 시각화
+        for pt in landmarks['headpose']:
+            cv2.circle(frame, pt, 2, (255, 0, 0), -1)
 
     else:
         cv2.putText(frame, "No face detected", (30, 30),

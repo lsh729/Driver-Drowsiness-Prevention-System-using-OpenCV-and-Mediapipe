@@ -13,6 +13,7 @@ class FaceLandmarkDetector:
         self.LEFT_EYE_IDX = [160, 144, 158, 153, 33, 133]
         self.RIGHT_EYE_IDX = [385, 380, 387, 373, 362, 263]
         self.MOUTH_IDX = [13, 14, 80, 402, 271, 88, 61, 291]
+        self.HEADPOSE_IDX = [1, 33, 61, 199, 263, 291]
 
     def get_landmarks(self, frame):
         # BGR → RGB 변환
@@ -30,7 +31,8 @@ class FaceLandmarkDetector:
             return {
                 'left_eye': extract_points(self.LEFT_EYE_IDX),
                 'right_eye': extract_points(self.RIGHT_EYE_IDX),
-                'mouth': extract_points(self.MOUTH_IDX)
+                'mouth': extract_points(self.MOUTH_IDX),
+                'headpose': extract_points(self.HEADPOSE_IDX)
             }
 
         return None

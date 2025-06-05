@@ -42,3 +42,7 @@ output/
 *.webm
 *.png
 *.jpg
+
+# Audio files
+songs/*.mp3
+songs/*.wav

@@ -1,6 +1,9 @@
+# drowsiness_logic.py
+
 import numpy as np
 import pygame
 import random
+import cv2
 
 def euclidean(p1, p2):
     return np.linalg.norm(np.array(p1) - np.array(p2))
@@ -15,6 +18,8 @@ class DrowsinessEvaluator:
         self.has_yawned = False         
         self.eye_close_counter = 0
         self.eye_open_frame = 0
+        self.head_down_counter = 0
+        self.head_down_threshold = 100
         
         pygame.mixer.init()
         self.current_audio = "none"
@@ -22,8 +27,6 @@ class DrowsinessEvaluator:
             "songs/wake1.mp3",
             "songs/wake2.mp3",
             "songs/wake3.mp3",
-            "songs/wake4.mp3",
-            "songs/wake5.mp3"
             ]
 
     def compute_EAR(self, eye):
@@ -41,16 +44,51 @@ class DrowsinessEvaluator:
         mar = (A + B + C) / (3.0 * D)
         return mar
 
-    def evaluate(self, landmarks):
+    def compute_pitch_angle(self, image_points, frame_shape):
+        model_points = np.array([
+            (0.0, 0.0, 0.0),        # Nose tip
+            (-30.0, -30.0, -30.0),  # Left eye
+            (-30.0, 30.0, -30.0),   # Left mouth
+            (0.0, 60.0, -50.0),     # Chin
+            (30.0, -30.0, -30.0),   # Right eye
+            (30.0, 30.0, -30.0)     # Right mouth
+        ])
+
+        height, width = frame_shape[:2]
+        focal_length = width
+        center = (width / 2, height / 2)
+        camera_matrix = np.array([
+            [focal_length, 0, center[0]],
+            [0, focal_length, center[1]],
+            [0, 0, 1]
+        ], dtype="double")
+        dist_coeffs = np.zeros((4, 1))
+
+        success, rotation_vector, translation_vector = cv2.solvePnP(
+            model_points,
+            np.array(image_points, dtype="double"),
+            camera_matrix,
+            dist_coeffs
+        )
+
+        rmat, _ = cv2.Rodrigues(rotation_vector)
+        pitch = np.arcsin(-rmat[2][1]) * 180.0 / np.pi
+        return pitch
+
+    def evaluate(self, landmarks, frame):
         left_eye = landmarks['left_eye']
         right_eye = landmarks['right_eye']
         mouth = landmarks['mouth']
+        headpose_pts = landmarks['headpose']
 
         ear = (self.compute_EAR(left_eye) + self.compute_EAR(right_eye)) / 2.0
         mar = self.compute_MAR(mouth)
+        pitch = self.compute_pitch_angle(headpose_pts, frame.shape)
+
         
         state = "Normal"
-
+        print(f"[DEBUG] pitch angle: {pitch:.2f} deg")
+        
         if ear < self.ear_threshold:
             self.eye_close_counter += 1
             self.eye_open_frame = 0
@@ -83,23 +121,37 @@ class DrowsinessEvaluator:
             self.yawn_frame_count = 0
             self.has_yawned = False
 
+        if pitch > 27:
+            self.head_down_counter += 1
+            if self.head_down_counter >= 5:
+                self.drowsy_score = 30
+                state = "Danger"
+        else:
+            self.head_down_counter = 0
+
         if self.drowsy_score >= 30:
             state = "Danger"
             if self.current_audio != "alarm":
                 pygame.mixer.music.stop()
-                pygame.mixer.music.load("alarm.mp3")
+                pygame.mixer.music.load("songs/alarm.mp3")
                 pygame.mixer.music.play(-1)  
                 self.current_audio = "alarm"
 
         elif 20 <= self.drowsy_score < 30:
             state = "Warning"
-            if self.current_audio != "music":
-                self.current_audio = "music"
+
+            if self.current_audio == "alarm":
+                pygame.mixer.music.stop()
+                self.current_audio = "none"
+
             if not pygame.mixer.music.get_busy():
                 next_song = random.choice(self.wake_up_songs)
+                while next_song == self.current_audio:
+                    next_song = random.choice(self.wake_up_songs)
+
                 pygame.mixer.music.load(next_song)
                 pygame.mixer.music.play()
-
+                self.current_audio = next_song
         else:
             state = "Normal"
             if self.current_audio != "none":

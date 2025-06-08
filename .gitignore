@@ -35,13 +35,6 @@ venv.bak/
 *.bak
 *.swp
 
-# 프로젝트 산출물 (예: 영상, 결과 이미지 등)
-output/
-*.avi
-*.mp4
-*.webm
-*.png
-*.jpg
 
 # Audio files
 songs/*.mp3

@@ -24,19 +24,19 @@ Python 버전은 3.8 ~ 3.12를 권장합니다.
 
 ## 폴더 구조
 
-.
-├── main.py
-├── detector/
-│   ├── drowsiness_logic.py
-│   └── face_detector.py
-├── songs/
-│   ├── alarm.mp3
-│   ├── wake1.mp3
-│   └── ...
-├── demo/
-│   ├── 시연영상.mkv
-│   └── thumbnail.png
-├── README.md
+.  
+├── main.py  
+├── detector/  
+│   ├── drowsiness_logic.py  
+│   └── face_detector.py  
+├── songs/  
+│   ├── alarm.mp3  
+│   ├── wake1.mp3  
+│   └── ...  
+├── demo/  
+│   ├── 시연영상.mkv  
+│   └── thumbnail.png  
+├── README.md  
 
 
 
@@ -48,19 +48,20 @@ Python 버전은 3.8 ~ 3.12를 권장합니다.
 -   눈 감김(EAR) 감지 : Mediapipe로부터 눈 좌표를 추출하고 EAR(Eye Aspect Ratio)를 계산하여 일정 시간 이상 감긴 상태를 탐지함.
 
 
--    하품(MAR) 감지 : 입 좌표 기반 MAR(Mouth Aspect Ratio)를 통해 하품 여부를 감지. 15프레임 이상 입이 열려 있으면 하품으로 판단하고 점수 반영
+-    하품(MAR) 감지 : 입 좌표 기반 MAR(Mouth Aspect Ratio)를 통해 하품 여부를 감지. 15프레임 이상 입이 열려 있으면 하품으로 판단하고 점수 반영  
 
 
--    고개 숙임(Pitch) 감지 : 3D-2D 투영(PnP) 방식으로 얼굴 기울기(특히 pitch angle)를 계산하여 고개를 숙인 상태인지 판단
+
+-    고개 숙임(Pitch) 감지 : 3D-2D 투영(PnP) 방식으로 얼굴 기울기(특히 pitch angle)를 계산하여 고개를 숙인 상태인지 판단  
 
 
--    졸음 점수 기반 상태 평가 : 눈, 입, 고개 데이터를 종합하여 졸음 점수를 계산. 점수에 따라 세 가지 상태로 분류: Normal, Warning, Danger
+-    졸음 점수 기반 상태 평가 : 눈, 입, 고개 데이터를 종합하여 졸음 점수를 계산. 점수에 따라 세 가지 상태로 분류: Normal, Warning, Danger  
 
 
--    단계별 경고음 재생 : 상태에 따라 다른 오디오 반응: Danger 상태는 경고음(alarm.mp3), Warning 상태는 랜덤 음악(wake1~3.mp3), Normal 상태는 무음
+-    단계별 경고음 재생 : 상태에 따라 다른 오디오 반응: Danger 상태는 경고음(alarm.mp3), Warning 상태는 랜덤 음악(wake1~3.mp3), Normal 상태는 무음  
 
 
--    시각적 효과 : 화면에 졸음 점수와 state를 출력, Danger 상태일 경우 화면에 빨간 테두리가 깜빡거려  시각적인 위험성을 인지시킴.
+-    시각적 효과 : 화면에 졸음 점수와 state를 출력, Danger 상태일 경우 화면에 빨간 테두리가 깜빡거려  시각적인 위험성을 인지시킴.  
 
 
 

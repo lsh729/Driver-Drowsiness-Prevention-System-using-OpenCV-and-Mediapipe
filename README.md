@@ -346,10 +346,9 @@ if self.drowsy_score >= 30:
 
 ## 시연 영상
 
-(demo/시연 영상.mp4)
 
 
-[![Demo Video](demo/thumbnail.png)](demo/시연영상.mp4)
+[![Demo Video](demo/thumbnail.png)](demo/시연영상.mkv)
 
 
 

@@ -32,9 +32,12 @@ Python 버전은 3.8 ~ 3.12를 권장합니다.
 ├── songs/
 │   ├── alarm.mp3
 │   ├── wake1.mp3
-│   │── ...
-│
+│   └── ...
+├── demo/
+│   ├── 시연영상.mkv
+│   └── thumbnail.png
 ├── README.md
+
 
 
 

@@ -144,13 +144,13 @@ Python 버전은 3.8 ~ 3.12를 권장합니다.
 
 
 
-  pygame.mixer.init()
-        self.current_audio = "none"
-        self.wake_up_songs = [
-          "songs/wake1.mp3",
-          "songs/wake2.mp3",
-          "songs/wake3.mp3",
-          ]
+                  pygame.mixer.init()
+                        self.current_audio = "none"
+                        self.wake_up_songs = [
+                          "songs/wake1.mp3",
+                          "songs/wake2.mp3",
+                          "songs/wake3.mp3",
+                          ]
 
 - pygame을 이용한 오디오 재생 초기화, 음악 재생 목록 준비
 

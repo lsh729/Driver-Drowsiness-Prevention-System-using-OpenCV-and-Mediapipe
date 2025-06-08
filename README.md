@@ -74,29 +74,29 @@ Python 버전은 3.8 ~ 3.12를 권장합니다.
 
 1) face_detector.py 코드 설명
 
-rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-results = self.face_mesh.process(rgb)
+  rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+  results = self.face_mesh.process(rgb)
 
 - OpenCV는 BGR이지만 Mediapipe는 RGB이므로 변환
 
 
-self.LEFT_EYE_IDX = [160, 144, 158, 153, 33, 133]
-self.RIGHT_EYE_IDX = [385, 380, 387, 373, 362, 263]
-self.MOUTH_IDX = [13, 14, 80, 402, 271, 88, 61, 291]
-self.HEADPOSE_IDX = [1, 33, 61, 199, 263, 291]
+  self.LEFT_EYE_IDX = [160, 144, 158, 153, 33, 133]
+  self.RIGHT_EYE_IDX = [385, 380, 387, 373, 362, 263]
+  self.MOUTH_IDX = [13, 14, 80, 402, 271, 88, 61, 291]
+  self.HEADPOSE_IDX = [1, 33, 61, 199, 263, 291]
 
 - eye, mouth, heapose의 좌표
 
 
 
-def extract_points(index_list):
-                return [(int(landmarks[i].x * w), int(landmarks[i].y * h)) for i in index_list]
-
-            return {
-                'left_eye': extract_points(self.LEFT_EYE_IDX),
-                'right_eye': extract_points(self.RIGHT_EYE_IDX),
-                'mouth': extract_points(self.MOUTH_IDX),
-                'headpose': extract_points(self.HEADPOSE_IDX)
+  def extract_points(index_list):
+                  return [(int(landmarks[i].x * w), int(landmarks[i].y * h)) for i in index_list]
+  
+              return {
+                  'left_eye': extract_points(self.LEFT_EYE_IDX),
+                  'right_eye': extract_points(self.RIGHT_EYE_IDX),
+                  'mouth': extract_points(self.MOUTH_IDX),
+                  'headpose': extract_points(self.HEADPOSE_IDX)
 
 - Mediapipe는 0~1 사이 정규화된 좌표를 반환하므로, eye, mouth, heapose의 좌표들을 OpenCV 프레임 크기의 픽셀 좌표(x,y) 로 변환하여 EAR, MAR, 고개 각도 계산에 사용.
 
@@ -105,31 +105,31 @@ def extract_points(index_list):
 
 2) main.py 코드 설명
 
-cv2.VideoCapture(0)
-(cap.read())
+  cv2.VideoCapture(0)
+  (cap.read())
 
 - 웹캠을 열고 매 프레임마다 캠에서 이미지를 받기.
 
 
 
-landmarks = face.get_landmarks(frame)
+  landmarks = face.get_landmarks(frame)
 
 - 얼굴이 인식되면 Mediapipe 기반 get_landmarks()를 통해 eye, mouth, headpose 좌표를 추출.
 
 
 
 
- score = evaluator.drowsy_score
-        if score < 20:
-            color = (0, 255, 0)
-        elif score < 30:
-            color = (0, 255, 255)
-        else:
-            color = (0, 0, 255)
+   score = evaluator.drowsy_score
+          if score < 20:
+              color = (0, 255, 0)
+          elif score < 30:
+              color = (0, 255, 255)
+          else:
+              color = (0, 0, 255)
             
-        if state == "Danger" and (frame_count // 10) % 2 == 0:
-            h, w, _ = frame.shape
-            cv2.rectangle(frame, (0, 0), (w, h), (0, 0, 255), 10)
+          if state == "Danger" and (frame_count // 10) % 2 == 0:
+              h, w, _ = frame.shape
+              cv2.rectangle(frame, (0, 0), (w, h), (0, 0, 255), 10)
             
 - 점수에 따라 색상을 변경( 20점 미만 초록, 20~29점은 노랑, 30점 이상 빨강), "Danger" state일 경우, 화면에 빨간색 테두리가 깜빡거림.
 
@@ -137,41 +137,41 @@ landmarks = face.get_landmarks(frame)
 
 3) drowsiness_logic.py 코드 설명
 
-self.ear_threshold = 0.23
-self.mar_threshold = 0.65
+  self.ear_threshold = 0.23
+  self.mar_threshold = 0.65
 
 - ear, mar 기준값
 
 
 
-pygame.mixer.init()
-self.current_audio = "none"
-self.wake_up_songs = [
-    "songs/wake1.mp3",
-    "songs/wake2.mp3",
-    "songs/wake3.mp3",
-    ]
+  pygame.mixer.init()
+  self.current_audio = "none"
+  self.wake_up_songs = [
+      "songs/wake1.mp3",
+      "songs/wake2.mp3",
+      "songs/wake3.mp3",
+      ]
 
 - pygame을 이용한 오디오 재생 초기화, 음악 재생 목록 준비
 
 
 
 
-def compute_EAR(self, eye):
-    A = euclidean(eye[0], eye[1])
-    B = euclidean(eye[2], eye[3])
-    C = euclidean(eye[4], eye[5])
-    ear = (A + B) / (2.0 * C)
-    return ear
+  def compute_EAR(self, eye):
+      A = euclidean(eye[0], eye[1])
+      B = euclidean(eye[2], eye[3])
+      C = euclidean(eye[4], eye[5])
+      ear = (A + B) / (2.0 * C)
+      return ear
 
 - 좌표 6개로 EAR 계산 함수, 눈이 감길수록 EAR 값은 감소 (기준값 0.23)
 
 
 
 
-if ear < self.ear_threshold:
-            self.eye_close_counter += 1
-            self.eye_open_frame = 0
+  if ear < self.ear_threshold:
+              self.eye_close_counter += 1
+              self.eye_open_frame = 0
 
 
 - EAR 값이 0.23보다 작을 경우, 눈 감은 상태로 판단
@@ -218,20 +218,20 @@ if ear < self.ear_threshold:
 
 
 
-def compute_MAR(self, mouth):
-    A = euclidean(mouth[0], mouth[1])
-    B = euclidean(mouth[2], mouth[3])
-    C = euclidean(mouth[4], mouth[5])
-    D = euclidean(mouth[6], mouth[7])
-    mar = (A + B + C) / (3.0 * D)
-    return mar
+  def compute_MAR(self, mouth):
+      A = euclidean(mouth[0], mouth[1])
+      B = euclidean(mouth[2], mouth[3])
+      C = euclidean(mouth[4], mouth[5])
+      D = euclidean(mouth[6], mouth[7])
+      mar = (A + B + C) / (3.0 * D)
+      return mar
 
 - 좌표 8개로 MAR 계산 함수, 입을 벌릴 수록 MAR값 증가 (기준값 0.65)
 
 
 
-if mar > self.mar_threshold:
-            self.yawn_frame_count += 1
+  if mar > self.mar_threshold:
+              self.yawn_frame_count += 1
 
 - MAR가 0.65 이상이면 입이 열린 상태
 
@@ -250,16 +250,16 @@ if mar > self.mar_threshold:
 
 
 
-def compute_pitch_angle(self, image_points, frame_shape):
+  def compute_pitch_angle(self, image_points, frame_shape):
 
-model_points = np.array([
-    (0.0, 0.0, 0.0),        # 코 끝 (기준점)
-    (-30.0, -30.0, -30.0),  # 왼쪽 눈
-    (-30.0, 30.0, -30.0),   # 왼쪽 입
-    (0.0, 60.0, -50.0),     # 턱 (아래쪽)
-    (30.0, -30.0, -30.0),   # 오른쪽 눈
-    (30.0, 30.0, -30.0)     # 오른쪽 입
-])
+  model_points = np.array([
+      (0.0, 0.0, 0.0),        # 코 끝 (기준점)
+      (-30.0, -30.0, -30.0),  # 왼쪽 눈
+      (-30.0, 30.0, -30.0),   # 왼쪽 입
+      (0.0, 60.0, -50.0),     # 턱 (아래쪽)
+      (30.0, -30.0, -30.0),   # 오른쪽 눈
+      (30.0, 30.0, -30.0)     # 오른쪽 입
+  ])
 
 
 - Mediapipe의 얼굴 좌표 6개
@@ -267,38 +267,38 @@ model_points = np.array([
 
 
 
-height, width = frame_shape[:2]
-        focal_length = width
-        center = (width / 2, height / 2)
-        camera_matrix = np.array([
-            [focal_length, 0, center[0]],
-            [0, focal_length, center[1]],
-            [0, 0, 1]
-        ], dtype="double")
-        dist_coeffs = np.zeros((4, 1))
-
-        success, rotation_vector, translation_vector = cv2.solvePnP(
-            model_points,
-            np.array(image_points, dtype="double"),
-            camera_matrix,
-            dist_coeffs
-        )
-
-        rmat, _ = cv2.Rodrigues(rotation_vector)
-        pitch = np.arcsin(-rmat[2][1]) * 180.0 / np.pi  
-        return pitch
+  height, width = frame_shape[:2]
+          focal_length = width
+          center = (width / 2, height / 2)
+          camera_matrix = np.array([
+              [focal_length, 0, center[0]],
+              [0, focal_length, center[1]],
+              [0, 0, 1]
+          ], dtype="double")
+          dist_coeffs = np.zeros((4, 1))
+  
+          success, rotation_vector, translation_vector = cv2.solvePnP(
+              model_points,
+              np.array(image_points, dtype="double"),
+              camera_matrix,
+              dist_coeffs
+          )
+  
+          rmat, _ = cv2.Rodrigues(rotation_vector)
+          pitch = np.arcsin(-rmat[2][1]) * 180.0 / np.pi  
+          return pitch
 
 
 - 3D 영상과 2D 좌표를 매칭할 수 있게 camera matrix를 설정, slovepnp로 회전 벡터 추정 후 pitch 값 계산
 
 
-if pitch > 27:
-            self.head_down_counter += 1
-            if self.head_down_counter >= 5:
-                self.drowsy_score = 30
-                state = "Danger"
-        else:
-            self.head_down_counter = 0
+  if pitch > 27:
+              self.head_down_counter += 1
+              if self.head_down_counter >= 5:
+                  self.drowsy_score = 30
+                  state = "Danger"
+          else:
+              self.head_down_counter = 0
 
 
 
@@ -306,13 +306,13 @@ if pitch > 27:
 
 
 
-if self.drowsy_score >= 30:
-            state = "Danger"
-            if self.current_audio != "alarm":
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load("songs/alarm.mp3")
-                pygame.mixer.music.play(-1)  
-                self.current_audio = "alarm"
+  if self.drowsy_score >= 30:
+              state = "Danger"
+              if self.current_audio != "alarm":
+                  pygame.mixer.music.stop()
+                  pygame.mixer.music.load("songs/alarm.mp3")
+                  pygame.mixer.music.play(-1)  
+                  self.current_audio = "alarm"
 
 
 - 졸음 점수가 30 이상이면 Danger 상태, 재생중인 오디오가 alarm이 아닐 경우, 기존 음악 중지후 alarm 무한 반복(-1)
@@ -334,7 +334,7 @@ if self.drowsy_score >= 30:
                 pygame.mixer.music.play()
                 self.current_audio = next_song
 
-- 졸음 점수가 20~29점이면 Warning 상태, alarm.mp3가 재생 중이면 중지 or 음악이 재생되고 있지 않으면 wake1~3중 하나 랜덤 재생, 계속 반복
+- 졸음 점수가 20점과 29점사이면 Warning 상태, alarm.mp3가 재생 중이면 중지 or 음악이 재생되고 있지 않으면 wake1,2,3중 하나 랜덤 재생, 계속 반복
 
         else:
             state = "Normal"

@@ -348,7 +348,7 @@ if self.drowsy_score >= 30:
 
 
 
-[![Demo Video](demo/thumbnail.png)](demo/시연영상.mkv)
+[![Demo Video](demo/thumbnail.png)](demo/demo.mkv)
 
 
 
